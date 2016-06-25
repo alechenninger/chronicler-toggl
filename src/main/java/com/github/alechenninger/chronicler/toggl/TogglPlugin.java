@@ -8,7 +8,7 @@ import org.apache.commons.cli.Options;
 public class TogglPlugin implements Plugin {
   @Override
   public TimeSheetFactory timeSheetFactory() {
-    return null;
+    return new TogglTimeSheetFactory(new TogglClientFactory.Default());
   }
 
   @Override
@@ -26,7 +26,7 @@ public class TogglPlugin implements Plugin {
 
       @Override
       public Options cmdLineOptions() {
-        return null;
+        return TogglTimeSheetOptions.getOptions();
       }
 
       @Override

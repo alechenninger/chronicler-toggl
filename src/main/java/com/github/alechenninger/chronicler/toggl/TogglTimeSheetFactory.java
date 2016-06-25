@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 public class TogglTimeSheetFactory implements TimeSheetFactory {
-  private final TogglFactory togglFactory;
+  private final TogglClientFactory togglFactory;
 
   private static final ObjectMapper jsonMapper = new ObjectMapper();
 
-  public TogglTimeSheetFactory(TogglFactory togglFactory) {
+  public TogglTimeSheetFactory(TogglClientFactory togglFactory) {
     this.togglFactory = togglFactory;
   }
 
