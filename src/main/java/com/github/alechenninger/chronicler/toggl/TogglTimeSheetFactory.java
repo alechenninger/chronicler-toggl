@@ -8,14 +8,17 @@ import com.github.alechenninger.chronicler.ChroniclerException;
 import com.github.alechenninger.chronicler.TimeEntryCoordinates;
 import com.github.alechenninger.chronicler.TimeSheet;
 import com.github.alechenninger.chronicler.TimeSheetFactory;
+import org.apache.commons.cli.ParseException;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class TogglTimeSheetFactory implements TimeSheetFactory {
   private final TogglClientFactory togglFactory;
@@ -28,19 +31,34 @@ public class TogglTimeSheetFactory implements TimeSheetFactory {
 
   @Override
   public TimeSheet getTimeSheet(String[] args) {
-
-    return null;
+    try {
+      return getTimeSheet(new TogglTimeSheetOptions(args), Optional.empty());
+    } catch (ParseException e) {
+      throw new ChroniclerException(e);
+    }
   }
 
   @Override
   public TimeSheet getTimeSheet(String[] args, ZonedDateTime lastRecordedEntryTime) {
     try {
-      TogglTimeSheetOptions options = new TogglTimeSheetOptions(args);
-      JToggl toggl = togglFactory.getClient(options);
+      return getTimeSheet(new TogglTimeSheetOptions(args), Optional.of(lastRecordedEntryTime));
+    } catch (ParseException e) {
+      throw new ChroniclerException(e);
+    }
+  }
 
-      Instant start = lastRecordedEntryTime.toInstant();
-      java.util.Date end = null;
-      List<TimeEntry> timeEntries = toggl.getTimeEntries(Date.from(start), end);
+  private TimeSheet getTimeSheet(TogglTimeSheetOptions options,
+      Optional<ZonedDateTime> lastRecordedEntryTime) {
+    try {
+      Instant start = (options.start().isPresent()
+          ? options.start().get().atStartOfDay(ZoneId.systemDefault())
+          : lastRecordedEntryTime.orElseThrow(
+              () -> new ChroniclerException("No start time or last recorded entry time provided.")))
+          .toInstant();
+      Instant end = options.end().atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+      JToggl toggl = togglFactory.getClient(options);
+      List<TimeEntry> timeEntries = toggl.getTimeEntries(Date.from(start), Date.from(end));
 
       return new TogglTimeSheet(timeEntries, deserializeProjectMap(options.projectMapPath()));
     } catch (Exception e) {
