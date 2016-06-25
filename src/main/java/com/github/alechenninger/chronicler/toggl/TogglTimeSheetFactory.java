@@ -31,25 +31,18 @@ public class TogglTimeSheetFactory implements TimeSheetFactory {
 
   @Override
   public TimeSheet getTimeSheet(String[] args) {
-    try {
-      return getTimeSheet(new TogglTimeSheetOptions(args), Optional.empty());
-    } catch (ParseException e) {
-      throw new ChroniclerException(e);
-    }
+    return getTimeSheet(args, Optional.empty());
   }
 
   @Override
   public TimeSheet getTimeSheet(String[] args, ZonedDateTime lastRecordedEntryTime) {
-    try {
-      return getTimeSheet(new TogglTimeSheetOptions(args), Optional.of(lastRecordedEntryTime));
-    } catch (ParseException e) {
-      throw new ChroniclerException(e);
-    }
+    return getTimeSheet(args, Optional.of(lastRecordedEntryTime));
   }
 
-  private TimeSheet getTimeSheet(TogglTimeSheetOptions options,
-      Optional<ZonedDateTime> lastRecordedEntryTime) {
+  private TimeSheet getTimeSheet(String[] args, Optional<ZonedDateTime> lastRecordedEntryTime) {
     try {
+      TogglTimeSheetOptions options = new TogglTimeSheetOptions(args);
+      
       Instant start = (options.start().isPresent()
           ? options.start().get().atStartOfDay(ZoneId.systemDefault())
           : lastRecordedEntryTime.orElseThrow(
