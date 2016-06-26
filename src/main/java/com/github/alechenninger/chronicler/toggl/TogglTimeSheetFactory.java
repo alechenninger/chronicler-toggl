@@ -54,7 +54,7 @@ public class TogglTimeSheetFactory implements TimeSheetFactory {
       List<TimeEntry> timeEntries = toggl.getTimeEntries(Date.from(start), Date.from(end));
 
       return new TogglTimeSheet(timeEntries, deserializeProjectMap(options.projectMapPath()));
-    } catch (Exception e) {
+    } catch (ParseException | IOException e) {
       throw new ChroniclerException(e);
     }
   }
