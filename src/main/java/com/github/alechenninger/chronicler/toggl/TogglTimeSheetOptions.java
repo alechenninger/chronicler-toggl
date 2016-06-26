@@ -63,7 +63,7 @@ public class TogglTimeSheetOptions {
       .addOption(USER)
       .addOption(PASSWORD);
 
-  private static final Path DEFAULT_MAP = Paths.get("categories.json");
+  private static final Path DEFAULT_MAP = Paths.get("projects.json");
 
   private final CommandLine cli;
   private final Clock clock;
