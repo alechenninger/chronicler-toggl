@@ -16,10 +16,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -61,10 +58,9 @@ public class TogglTimeSheetFactory implements TimeSheetFactory {
       log.info("Querying toggl for time entries between " + start + " and " + end);
       List<TimeEntry> timeEntries = toggl.getTimeEntries(Date.from(start), Date.from(end));
 
-      List<Long> workspaceIds = timeEntries.stream()
+      Set<Long> workspaceIds = timeEntries.stream()
           .map(TimeEntry::getWid)
-          .distinct()
-          .collect(Collectors.toList());
+          .collect(Collectors.toSet());
 
       log.info("Querying toggl for projects in workspaces: " + workspaceIds);
 
@@ -90,8 +86,7 @@ public class TogglTimeSheetFactory implements TimeSheetFactory {
     }
   }
 
-  private Map<String, TimeEntryCoordinates> readProjectMap(Path projectMapPath)
-      throws IOException {
+  private Map<String, TimeEntryCoordinates> readProjectMap(Path projectMapPath) throws IOException {
     return jsonMapper.readValue(
         projectMapPath.toFile(),
         new TypeReference<Map<String, TimeEntryCoordinates>>() {});
