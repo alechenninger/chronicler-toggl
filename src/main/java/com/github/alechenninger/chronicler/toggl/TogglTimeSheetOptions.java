@@ -37,7 +37,7 @@ public class TogglTimeSheetOptions {
           "today if not provided.")
       .create("te");
 
-  private static final Option API_KEY = OptionBuilder.withLongOpt("apiKey")
+  private static final Option API_KEY = OptionBuilder.withLongOpt("togglApiKey")
       .hasArg()
       .isRequired(false)
       .withDescription("Toggl api key. If not provided, user and password options will be used.")
