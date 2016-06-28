@@ -43,7 +43,7 @@ public class TogglTimeSheet implements TimeSheet {
               .map(d -> ZonedDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()))
               .orElse(ZonedDateTime.now());
           Duration duration = Duration.between(start, stop);
-          float hours = (float) duration.toHours() + ((float) duration.getSeconds() / 60f);
+          float hours = duration.getSeconds() / 60f /*seconds per minute*/ / 60f /*minutes per hour*/;
 
           return Stream.of(new com.github.alechenninger.chronicler.TimeEntry(coords, start, hours));
         })
